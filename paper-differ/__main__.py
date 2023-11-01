@@ -74,8 +74,8 @@ def diff_commit(rev: str, repo: str):
         "--hard",
         rev
     ], cwd="paper-git")
-    configure_diff_git(repo)
     apply_patches()
+    configure_diff_git(repo)
 
     # Commit & push
 
