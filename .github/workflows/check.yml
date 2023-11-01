@@ -7,7 +7,7 @@ on:
 jobs:
   check:
     name: Check for Paper changes
-    runs-on: ubuntu-latenst
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - name: Install poetry
