@@ -100,10 +100,10 @@ def diff_commit(rev: str, repo: str):
 
 async def main():
     parser = argparse.ArgumentParser(description="Diffs the paper repository and uploads it to a private repository.")
-    parser.add_argument("--paper_repo", type=str, help="The URL to the paper repository", default=PAPER_REPO_URL)
-    parser.add_argument("--repo", type=str, help="The URL to the clone repository", default=CLONE_REPO_URL)
-    parser.add_argument("--initial", type=bool, help="Initial repository initialization step."
-                                                     "this should only be done once per branch.", default=False)
+    parser.add_argument("--paper_repo", type=str, help="The URL for the paper repository", default=PAPER_REPO_URL)
+    parser.add_argument("--repo", type=str, help="The URL for the clone repository", default=CLONE_REPO_URL)
+    parser.add_argument("--initial", type=bool, help="Repository initialization step."
+                                                     "This should only be done once per branch.", default=False)
     args = parser.parse_args()
 
     if not os.path.isdir("paper-git"):

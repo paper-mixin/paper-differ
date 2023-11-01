@@ -1,13 +1,13 @@
 # Paper Patch Differ
 
-This program that is meant to be ran on every time a commit is pushed to Paper makes it so we can see what changed in the minecraft server code on every commit.
+This program is meant to be ran every time a commit is pushed to Paper. It allows us to see what changed in the minecraft server code with each commit.
 
-To use this on the latest commit of Paper, just run it 
+To use this on the latest Paper commit, run:
 ```bash
 paper-differ
 ```
 
-If you'd like to do the initial run, do it like this;
+If you would also like to initialize the project, run:
 ```bash
 paper-differ --initial true
 ```
