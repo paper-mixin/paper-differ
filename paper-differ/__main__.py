@@ -6,7 +6,8 @@ import argparse
 from util import parse_git_out, run_git_diff, get_upstream_rev, pull_git_history
 
 PAPER_REPO_URL = "https://github.com/PaperMC/Paper"
-CLONE_REPO_URL = "git@github.com:paper-mixin/paper-server-tree.git"
+
+CLONE_REPO_URL = "https://github.com/paper-mixin/paper-server-tree.git"
 
 
 def configure_diff_git(repo: str, pull: bool = True):
