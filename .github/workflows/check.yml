@@ -15,4 +15,4 @@ jobs:
           python-version: 3.9
           cache: 'poetry'
       - run: poetry install
-      - run: poetry run paper-differ
+      - run: "poetry run 'python3 paper-differ/__main__.py'"
