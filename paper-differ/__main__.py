@@ -3,35 +3,13 @@ import subprocess
 import os
 import argparse
 
-from util import parse_git_out, run_git_diff
+from util import parse_git_out, run_git_diff, get_upstream_rev
 
 PAPER_REPO_URL = "https://github.com/PaperMC/Paper"
 CLONE_REPO_URL = "git@github.com:paper-mixin/paper-server-tree.git"
 
 
-def diff_commit(rev: str,  repo: str):
-    subprocess.run([
-        "git",
-        "reset",
-        "--hard",
-        rev
-    ], cwd="paper-git")
-
-    # old script check
-    if os.path.exists("paper-git/applyPatches.sh"):
-        subprocess.run([
-            "./upstreamMerge.sh"
-        ], cwd="paper-git")
-        subprocess.run([
-            "./applyPatches.sh"
-        ], cwd="paper-git")
-    else:
-        # New paperclip script
-        subprocess.run([
-            "./gradlew",
-            "applyServerPatches"
-        ], cwd="paper-git")
-
+def configure_diff_git(repo: str):
     run_git_diff([
         "git",
         "init"
@@ -52,7 +30,6 @@ def diff_commit(rev: str,  repo: str):
         "admin@papermc.io"
     ])
 
-    # Commit & push
     run_git_diff([
         "git",
         "branch",
@@ -67,6 +44,36 @@ def diff_commit(rev: str,  repo: str):
         "origin",
         repo
     ])
+
+
+def apply_patches():
+    # old script check
+    if os.path.exists("paper-git/applyPatches.sh"):
+        subprocess.run([
+            "./upstreamMerge.sh"
+        ], cwd="paper-git")
+        subprocess.run([
+            "./applyPatches.sh"
+        ], cwd="paper-git")
+    else:
+        # New paperclip script
+        subprocess.run([
+            "./gradlew",
+            "applyServerPatches"
+        ], cwd="paper-git")
+
+
+def diff_commit(rev: str, repo: str):
+    subprocess.run([
+        "git",
+        "reset",
+        "--hard",
+        rev
+    ], cwd="paper-git")
+    configure_diff_git(repo)
+    apply_patches()
+
+    # Commit & push
 
     run_git_diff([
         "git",
@@ -95,8 +102,8 @@ async def main():
     parser = argparse.ArgumentParser(description="Diffs the paper repository and uploads it to a private repository.")
     parser.add_argument("--paper_repo", type=str, help="The URL to the paper repository", default=PAPER_REPO_URL)
     parser.add_argument("--repo", type=str, help="The URL to the clone repository", default=CLONE_REPO_URL)
-    parser.add_argument("--backlog", type=bool, help="If we should push the last 10 commits on the paper repository, "
-                                                     "this should only be done once per tree.", default=False)
+    parser.add_argument("--initial", type=bool, help="Initial repository initialization step."
+                                                     "this should only be done once per branch.", default=False)
     args = parser.parse_args()
 
     if not os.path.isdir("paper-git"):
@@ -107,23 +114,59 @@ async def main():
             args.paper_repo,
             "paper-git"
         ])
-
-    if args.backlog:
-        # We don't want to go *too* far back, I think a big blob 10 commits away is good
-        revisions = parse_git_out(subprocess.check_output([
+    else:
+        # Make sure the repository is updated
+        subprocess.run([
             "git",
-            "rev-list",
-            "--reverse",
-            "HEAD~10..HEAD"
-        ], cwd="paper-git")).split("\n")
+            "pull"
+        ], cwd="paper-git")
 
-        for revision in revisions:
-            diff_commit(revision, args.repo)
+    if args.initial:
+        apply_patches()
+        configure_diff_git(args.repo)
+
+        upstream_latest = {
+            "Spigot": get_upstream_rev("Spigot/Spigot-Server"),
+            "Paper": get_upstream_rev("../Paper-Server")
+        }
+
+        for upstream in upstream_latest:
+            rev = upstream_latest[upstream]
+
+            subprocess.run([
+                "git",
+                "reset",
+                "--hard",
+                rev
+            ], cwd="paper-git/Paper-Server")
+
+            run_git_diff([
+                "git",
+                "add",
+                "."
+            ])
+
+            run_git_diff([
+                "git",
+                "commit",
+                "-m",
+                f"🎯 Checkpoint: {upstream} (at {rev})"
+            ])
+        run_git_diff([
+            "git",
+            "push",
+            "-u",
+            "origin",
+            "main",
+            "--force"
+        ])
+
     else:
         current_rev = parse_git_out(
             subprocess.check_output("git rev-parse HEAD".split(" "), cwd="paper-git"))
 
         diff_commit(current_rev, args.repo)
+
 
 if __name__ == "__main__":
     asyncio.run(main())

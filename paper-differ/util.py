@@ -1,6 +1,14 @@
 import subprocess
 
 
+def get_upstream_rev(upstream_name: str) -> str:
+    return parse_git_out(subprocess.check_output([
+        "git",
+        "rev-parse",
+        "head"
+    ], cwd=f"paper-git/work/{upstream_name}"))
+
+
 def parse_git_out(out: bytes) -> str:
     return out.decode("utf-8").removesuffix("\n")
 

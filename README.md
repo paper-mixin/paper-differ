@@ -7,7 +7,7 @@ To use this on the latest commit of Paper, just run it
 paper-differ
 ```
 
-If you'd like to do the initial backlog run, do it like this;
+If you'd like to do the initial run, do it like this;
 ```bash
-paper-differ --backlog true
+paper-differ --initial true
 ```
