@@ -1,6 +1,0 @@
-name: "Paper Differ"
-description: "This program is meant to be ran every time a commit is pushed to Paper. It allows us to see what changed in the minecraft server code with each commit."
-author: "xyzeva and paper-mixin contributors"
-runs:
-  using: "docker"
-  image: "Dockerfile"
