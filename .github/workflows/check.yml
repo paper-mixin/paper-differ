@@ -1,7 +1,9 @@
+name: Check for Paper changes
+
 on:
   workflow_dispatch:
   schedule:
-    - '*/15 * * * *'
+    - cron: '*/15 * * * *'
 jobs:
   check:
     name: Check for Paper changes
