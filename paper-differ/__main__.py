@@ -3,13 +3,16 @@ import subprocess
 import os
 import argparse
 
-from util import parse_git_out, run_git_diff, get_upstream_rev
+from util import parse_git_out, run_git_diff, get_upstream_rev, pull_git_history
 
 PAPER_REPO_URL = "https://github.com/PaperMC/Paper"
 CLONE_REPO_URL = "git@github.com:paper-mixin/paper-server-tree.git"
 
 
-def configure_diff_git(repo: str):
+def configure_diff_git(repo: str, pull: bool = True):
+    if not os.path.isdir(".paper-git") and pull:
+        pull_git_history(repo)
+
     run_git_diff([
         "git",
         "init"
@@ -123,7 +126,7 @@ async def main():
 
     if args.initial:
         apply_patches()
-        configure_diff_git(args.repo)
+        configure_diff_git(args.repo, pull=False)
 
         upstream_latest = {
             "Spigot": get_upstream_rev("Spigot/Spigot-Server"),
