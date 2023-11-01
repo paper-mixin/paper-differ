@@ -7,7 +7,7 @@ on:
 jobs:
   check:
     name: Check for Paper changes
-    runs-on: ubuntu-latenst
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - name: Install poetry
@@ -15,6 +15,5 @@ jobs:
       - uses: actions/setup-python@v4
         with:
           python-version: 3.9
-          cache: 'poetry'
       - run: poetry install
-      - run: "poetry run 'python3 paper-differ/__main__.py'"
+      - run: "poetry run 'python paper-differ/__main__.py --repo ${{ secrets.REPO_PATH_WITH_CREDS }}'"
