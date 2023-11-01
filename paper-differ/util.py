@@ -14,7 +14,7 @@ def parse_git_out(out: bytes) -> str:
 
 
 def run_git_diff(args):
-    """Run git command in diff git tree"""
+    """Run git command in the diff's git tree"""
 
     subprocess.run(args, cwd="paper-git/Paper-Server", env={
         "GIT_DIR": "../.diff-git-tree",
