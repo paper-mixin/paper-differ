@@ -3,7 +3,7 @@ import subprocess
 import os
 import argparse
 
-from util import parse_git_out, run_git_diff, get_upstream_rev, pull_git_history
+from util import parse_git_out, run_git_diff, get_upstream_rev, pull_git_history, run_git
 
 PAPER_REPO_URL = "https://github.com/PaperMC/Paper"
 
@@ -128,10 +128,11 @@ async def main():
     if args.initial:
         apply_patches()
         configure_diff_git(args.repo, pull=False)
+        run_git(["git", "checkout", "tags/base"])
 
         upstream_latest = {
-            "Spigot": get_upstream_rev("Spigot/Spigot-Server"),
-            "Paper": get_upstream_rev("../Paper-Server")
+            "Bukkit": get_upstream_rev("CraftBukkit"),
+            "Spigot": get_upstream_rev("Spigot/Spigot-Server")
         }
 
         for upstream in upstream_latest:
@@ -156,6 +157,17 @@ async def main():
                 "-m",
                 f"🎯 Checkpoint: {upstream} (at {rev})"
             ])
+
+        run_git(["git", "checkout", "master"])
+
+        run_git_diff(["git", "add", "."])
+        run_git_diff([
+            "git",
+            "commit",
+            "-m",
+            f"🎯 Checkpoint: Paper"
+        ])
+
         run_git_diff([
             "git",
             "push",

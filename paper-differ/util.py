@@ -36,3 +36,9 @@ def run_git_diff(args):
         "GIT_DIR": "../../.paper-git",
         "GIT_WORK_TREE": "."
     })
+
+
+def run_git(args: list):
+    """Run git command in the Paper-Server git tree"""
+
+    subprocess.run(args, cwd="paper-git/Paper-Server")
